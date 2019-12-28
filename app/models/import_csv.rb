@@ -1,5 +1,6 @@
 class ImportCsv < ApplicationRecord
   def self.import(path)
+    path = File.join Rails.root, "db/csv_data/csv_data.csv"
     list = []
     CSV.foreach(path, headers: true) do |row|
       list << {
@@ -8,6 +9,13 @@ class ImportCsv < ApplicationRecord
         address: row["address"]
       }
     end
-    User.create(list)
+    puts "インポート処理を開始"
+
+    begin
+      User.create(list)
+      puts "インポート完了！！"
+    rescue ActiveModel::UnknownAttributeError => invalid
+      puts "インポートに失敗：UnknownAttributeError"
+    end
   end
 end
